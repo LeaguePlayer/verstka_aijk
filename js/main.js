@@ -97,12 +97,90 @@ $(document).ready(function () {
 
 /* ----------------------------------------- Слайдер */
 
-    var slides = $('.main-slider button').length;
+var slider = $('.main-slider');
+var sliderNav = $('.slider_nav');
+var slides = [];
+var lastItem;
+var inSpeed = 600; // скорость появления
+var outSpeed = 600; // скорость вылета
+var changeTime = 4000; // время авто. смены
+
+slider.find('.slide').each(function(){
+    var index = $(this).index();
+    slides[index] = $(this);
+});
+
+function changeSlide(index) {
+
+    if(index!=lastItem) {
+
+        var sliderWidth = slider.width();
+        var description = slides[index].find('.description').clone();
+        var descPos = -description.outerWidth();
+        var targetLeft = slides[index].offset().left+slides[index].innerWidth()-600;
+
+        $('.main-slider').find('.active').stop().animate({'left': sliderWidth, opacity: 0}, outSpeed, function(){
+            $(this).remove();  
+        });
+        slider.prepend(description);
+        description.addClass('active')
+        .stop(true, true)
+        .css({'left': descPos, 'z-index': '10'})
+        .animate({'left': targetLeft, opacity: 1}, inSpeed);
+        
+        slider.find('img:visible').fadeOut(outSpeed);
+        sliderNav.find('.active').removeClass('active');
+        slides[index].find('img').stop(true, true).fadeIn(inSpeed);
+        slides[index].find('.buttons button:eq('+index+')').addClass('active');
+        sliderNav.find('li:eq('+index+') button').addClass('active');
+
+        lastItem = index;
+    }
+}
+
+sliderNav.find('li').click(function(){
+    var butIndex = $(this).index();
+    changeSlide(butIndex);
+    slideTimer();
+});
+
+function slideTimer() {
+    var timer, timeout = null;
+    var ind = 0;
+    var sLength = slides.length -1;
+
+    slideTimer = function() {
+        clearInterval(timer);
+
+        timer = setInterval(function(){
+            ind++;
+            if(ind > sLength) {
+                changeSlide(0);
+                ind = 0;
+            } else {
+                changeSlide(ind);
+            }
+
+            /*ind > slides.length ? changeSlide(0); ind = 0; : changeSlide(ind);
+            console.log(ind);*/
+        }, changeTime);
+    }
+    slideTimer();
+}
+
+slideTimer();
+
+if ($('.main-slider').length) {
+  changeSlide(0);  
+}
+
+
+/*    var slides = $('.main-slider button').length;
     var auto;
 
     if ($('.main-slider').length) {
         $(".main-slider .slide").jCarouselLite({
-            /*auto: 3000,*/
+            auto: 3000,
             speed: 500,
             visible: 1,
             beforeStart: function(a) {
@@ -136,7 +214,7 @@ $(document).ready(function () {
             $('.main-slider img').fadeOut(500);
             $('.main-slider img:eq('+(id-1)+')').fadeIn(500);
     }
-
+*/
 /* Слайдер -------------------------------------- */
 
 
@@ -168,6 +246,11 @@ $('.toggle .construction').click(function(){
 
 /* Переключатель объектов ----------------------------------------- */
 
+$('.administration .director').click(function(){
+    $.fancybox.open($(this).find('.more'));
+    return false;
+});
+
 $('#move_calculate').click(function(){
     $.fancybox.open($('.move_box'));
     return false;
@@ -177,6 +260,9 @@ $('.loan_item .pick_button').click(function(){
     $.fancybox.open($('.full_request_box'));
     return false;
 });
+
+
+$('.seasons .season a').fancybox();
 
 if($('select').length) {
     $("select").styler();
