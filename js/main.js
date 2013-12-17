@@ -246,6 +246,34 @@ $('.toggle .construction').click(function(){
 
 /* Переключатель объектов ----------------------------------------- */
 
+/* ----------------------------------------- "how to get" slider */
+
+if($('.step-description')) {
+        var c = 0,
+        descPage = {}
+        stepPages = $('.step-description .description'),
+        stepPages.each(function(){
+            descPage[c] = $(this);
+            c++;
+        });
+    
+    function showStep(index) {
+        descPage[index].show(300);
+    }
+
+    showStep(1);
+
+    $('.get-steps li').click(function(){
+        var currentStep = $(this).index();
+        $('.step-description .description').hide(300);
+        showStep(currentStep);
+        return false;
+    });
+
+}
+
+/* "how to get" slider ----------------------------------------- */
+
 $('.administration .director').click(function(){
     $.fancybox.open($(this).find('.more'));
     return false;
@@ -261,8 +289,9 @@ $('.loan_item .pick_button').click(function(){
     return false;
 });
 
-
-$('.seasons .season a').fancybox();
+if($('.seasons').length) {
+    $('.seasons .season a').fancybox();
+}
 
 if($('select').length) {
     $("select").styler();
